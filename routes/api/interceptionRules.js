@@ -6,17 +6,13 @@ const InterceptionRules = require("../../models/InterceptionRules");
 
 router.get("/", async (req, res, next) => {
   try {
+    const condition = req.body;
     let db = await dbConnection(req, res);
     if (!db || !db.success) return res.status(401).json(db);
     let InterceptionRulesModel = InterceptionRules(db.connection);
-    
-    InterceptionRulesModel.findAll(
-      {
-        attributes: ['irule_id', 'source']
-      }
-    )
+
+    InterceptionRulesModel.findAll({ where: condition })
     .then(data => {
-      console.log(data)
       res.send(data);
     })
     .catch(err => {
@@ -28,7 +24,10 @@ router.get("/", async (req, res, next) => {
     });
     
   } catch (error) {
-    console.log(error)  
+    console.log(error)
+    res.status(500).send({
+      message: error
+    });
   }
 });
 
