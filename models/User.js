@@ -4,16 +4,29 @@ const User = (connection) => {
   return connection.define(
     "User",
     {
-      firstName: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      user_id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
       },
-      lastName: {
+      user_label: {
         type: DataTypes.STRING,
+      },
+      user_comments: {
+        type: DataTypes.STRING,
+      },
+      is_group: {
+        type: DataTypes.BOOLEAN,
+      },
+      disable_logging: {
+        type: DataTypes.BOOLEAN,
+      },
+      user_version: {
+        type: DataTypes.BIGINT,
       },
     },
     {
-      tableName: "Employees",
+      tableName: "liv2_users",
       timestamps: false,
     }
   );
