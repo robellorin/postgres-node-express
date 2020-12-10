@@ -1,8 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const Sequelize = require("sequelize");
+const op = Sequelize.Op;
 const { dbConnection } = require("../../config");
 
 const User = require("../../models/User");
+const FilterInet = require("../../models/filter_inet");
+const IpRangeList = require("../../models/Ip_range_list");
 
 router.put("/:id", async (req, res, next) => {
   try {
@@ -68,7 +72,9 @@ router.get("/", async (req, res, next) => {
   try {
     let db = await dbConnection(req, res);
     if (!db || !db.success) return res.status(401).json(db);
-    let userModel = User(db.connection);
+    let IpRangeListModel = IpRangeList(db.connection);
+    let UserModel = User(db.connection);
+    let FilterInetModel = FilterInet(db.connection);
     const condition = req.body.query;
     let findRec = {};
     findRec = { where: condition };
@@ -76,11 +82,45 @@ router.get("/", async (req, res, next) => {
     const { orderby, order } = req.query; // ?orderby=user&order=asc
 
     if (orderby && order) {
-      findRec.order = [orderby, order];
+      findRec.order = [[orderby, order]];
     }
 
-    await userModel
-      .findAll({ ...findRec })
+    // IpRangeList.belongsTo(User, {
+    //   through: FilterInet,
+    // });
+
+    FilterInetModel.hasOne(IpRangeListModel, {
+      foreignKey: "iprange_id",
+      sourceKey: "iprange_id",
+    });
+    IpRangeListModel.belongsTo(FilterInetModel, {
+      foreignKey: "iprange_id",
+      sourceKey: "iprange_id",
+    });
+
+    FilterInetModel.hasOne(UserModel, {
+      foreignKey: "user_id",
+      sourceKey: "user_id",
+    });
+    UserModel.belongsTo(FilterInetModel, {
+      foreignKey: "user_id",
+      sourceKey: "user_id",
+    });
+    // UserModel.belongsTo(IpRangeListModel, { through: FilterInetModel });
+
+    // UserModel.belongsToMany(IpRangeListModel, { through: FilterInetModel,  });
+
+    await UserModel.findAll({
+      ...findRec,
+      include: [
+        {
+          model: FilterInetModel,
+          include: {
+            model: IpRangeListModel,
+          },
+        },
+      ],
+    })
       .then((data) => {
         res.send(data);
       })

@@ -28,6 +28,9 @@ const User = (connection) => {
     {
       tableName: "liv2_users",
       timestamps: false,
+      // associate: function (models) {
+      //   User.belongsTo(models.Filter_inet, { foreignKey: "user_id" });
+      // },
     }
   );
 };

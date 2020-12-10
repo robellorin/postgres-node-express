@@ -4,7 +4,7 @@ const Iprangelist = (connection) => {
   return connection.define(
     "Iprangelist",
     {
-      Iprange_id: {
+      iprange_id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -25,6 +25,11 @@ const Iprangelist = (connection) => {
     {
       tableName: "liv2_filter_ipranges_list",
       timestamps: false,
+      // associate: function (models) {
+      //   Iprangelist.belongsToMany(models.Filter_inet, {
+      //     foreignKey: "iprange_id",
+      //   });
+      // },
     }
   );
 };

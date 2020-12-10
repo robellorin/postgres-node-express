@@ -28,10 +28,10 @@ const db = async (ip, token) => {
       port: port,
       dialect: "postgres",
       pool: {
-        max: 3,
+        max: 1,
         min: 0,
-        acquire: 100,
-        idle: 100,
+        idle: 200000,
+        acquire: 1000000,
       },
     });
     return sequelize;
