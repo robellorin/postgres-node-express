@@ -16,7 +16,7 @@ const db = async (ip, token) => {
     const dbCred = {
       database: "blzsmbxf",
       username: "blzsmbxf",
-      password: "k_X_nbcV7kiPsQ0d7i1fRBYUPVKmecAg",
+      password: "lE_vAiXuAoMwsMSMe8KKmg2VATT6cfsC",
       port: 5432,
     };
 
