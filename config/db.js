@@ -6,17 +6,25 @@ const db = async (ip, token) => {
     const dbaccessResult = await dbaccess(ip, token);
     if (!dbaccessResult || !dbaccessResult.db_user) return false;
   
+    // const dbCred = {
+    //   database: dbaccessResult.db_name,
+    //   username: dbaccessResult.db_user,
+    //   password: dbaccessResult.db_pass,
+    //   port: dbaccessResult.db_port
+    // }
+
     const dbCred = {
-      database: dbaccessResult.db_name,
-      username: dbaccessResult.db_user,
-      password: dbaccessResult.db_pass,
-      port: dbaccessResult.db_port
+      database: 'blzsmbxf',
+      username: 'blzsmbxf',
+      password: 'k_X_nbcV7kiPsQ0d7i1fRBYUPVKmecAg',
+      port: 5432
     }
   
     const {database, username, password, port} = dbCred
   
     const sequelize = new Sequelize(database, username, password, {
-      host: ip,
+      host: 'suleiman.db.elephantsql.com',
+      // host: ip,
       port: port,
       dialect: "postgres",
       pool: {

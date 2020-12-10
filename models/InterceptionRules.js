@@ -2,11 +2,12 @@ const { Sequelize, DataTypes, Model } = require("sequelize");
 
 const InterceptionRules = (connection) => {
   return connection.define(
-    "InterceptionRules",
+    "InterceptionRule",
     {
       irule_id: {
         type: DataTypes.INTEGER,
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement: true
       },
       source: {
         type: DataTypes.STRING,
