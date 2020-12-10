@@ -6,7 +6,7 @@ const InterceptionRules = require("../../models/InterceptionRules");
 
 router.get("/", async (req, res, next) => {
   try {
-    const condition = req.body;
+    const condition = req.body.query;
     let db = await dbConnection(req, res);
     if (!db || !db.success) return res.status(401).json(db);
     let InterceptionRulesModel = InterceptionRules(db.connection);
