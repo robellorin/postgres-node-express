@@ -11,11 +11,13 @@ app.use(cors());
 const indexRoute = require("./routes");
 const apiIndexRoute = require("./routes/api");
 const usersRoute = require("./routes/api/users");
+const interceptionRulesRoute = require("./routes/api/interceptionRules");
 
 app.use(bodyParser.urlencoded({ limit: "1000mb", extended: true }));
 app.use(bodyParser.json({ limit: "1000mb", extended: true }));
 
 app.use("/api/users", usersRoute);
+app.use("/api/interceptionRules", interceptionRulesRoute);
 app.use("/api", apiIndexRoute);
 app.use("/", indexRoute);
 
