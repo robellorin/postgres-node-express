@@ -1,13 +1,11 @@
-const { Sequelize, DataTypes, Model } = require("sequelize");
-
-const InterceptionRules = (connection) => {
-  return connection.define(
-    "InterceptionRule",
+const liv2_filtering_interceptionrule = (sequelize, DataTypes) => {
+  const Liv2FilteringInterception = sequelize.define(
+    'liv2_filtering_interceptionrule ',
     {
       irule_id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
       },
       source: {
         type: DataTypes.STRING,
@@ -32,13 +30,17 @@ const InterceptionRules = (connection) => {
       },
       weight: {
         type: DataTypes.INTEGER,
-      }
+      },
     },
     {
-      tableName: "liv2_filtering_interceptionrule",
+      tableName: 'liv2_filtering_interceptionrule',
       timestamps: false,
-    }
+    },
   );
-};
-module.exports = InterceptionRules;
 
+  Liv2FilteringInterception.associate = (models) => {};
+
+  return Liv2FilteringInterception;
+};
+
+export default liv2_filtering_interceptionrule;
