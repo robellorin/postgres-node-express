@@ -19,6 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/users', database, routes.user);
 app.use('/api/interceptionRules', database, routes.interceptionRules);
+app.use('/api/shell', database, routes.shell);
 // Start
 
 app.listen(process.env.PORT, () =>
