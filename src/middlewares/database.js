@@ -9,9 +9,7 @@ export default async (req, res, next) => {
     if (!pghost)
       return res
         .status(500)
-        .json({ success: false, msg: 'DB connection failed' });
-
-    // Uncomment this on production
+        .json({ success: false, msg: 'PGHOST is missing' });
 
     const dbaccessResult = await dbaccess(pghost, authorization);
 
@@ -19,8 +17,6 @@ export default async (req, res, next) => {
       return res
         .status(500)
         .json({ success: false, msg: 'DB connection failed' });
-
-    // Uncomment this on production
 
     const dbCred = {
       database: dbaccessResult.db_name,
@@ -30,7 +26,6 @@ export default async (req, res, next) => {
       ip: pghost,
     };
 
-    // comment this on production
     // const dbCred = {
     //   database: 'livigent',
     //   username: 'postgres',
@@ -38,7 +33,6 @@ export default async (req, res, next) => {
     //   port: 5432,
     // };
 
-    const eraseDatabaseOnSync = false;
     const config = await connectDb(dbCred);
     req.models = config.models;
     req.sequelize = config.sequelize;

@@ -3,21 +3,31 @@ import { Router } from 'express';
 const router = Router();
 
 router.get('/', async (req, res) => {
-  const condition = req.body.query;
-  const interceptionRules = await req.models.Liv2FilteringInterception.findAll(
-    {
-      where: condition,
-    },
-  );
-  req.sequelize.close().then(() => {
-    console.log('connection closed');
-  });
-  return res.send(interceptionRules);
+  try {
+    const condition = req.body.query;
+    const interceptionRules = await req.models.Liv2FilteringInterception.findAll(
+      {
+        where: condition,
+      },
+    );
+    req.sequelize.close().then(() => {
+      console.log('connection closed');
+    });
+    return res.send(interceptionRules);
+  } catch (error) {
+    console.log(error);
+    req.sequelize.close().then(() => {
+      console.log('connection closed');
+    });
+    res.status(500).send({
+      message: error.toString(),
+    });
+  }
 });
 
 router.post('/', async (req, res) => {
   try {
-    const insertData = req.body;
+    const insertData = req.body.data;
 
     let maxWeight = null;
 
@@ -28,13 +38,22 @@ router.post('/', async (req, res) => {
 
     maxWeight = max || 0;
 
-    insertData.weight = maxWeight + 1;
-
-    await req.models.Liv2FilteringInterception.create(insertData);
+    let result = null;
+    if (Array.isArray(insertData)) {
+      insertData.map((data)=>data.weight = ++maxWeight)
+      result = await req.models.Liv2FilteringInterception.bulkCreate(insertData, {returning: true, plain: true});
+      // result = JSON.parse(JSON.stringify(result))
+    } else {
+      insertData.weight = ++maxWeight;
+      result = await req.models.Liv2FilteringInterception.create(insertData, {returning: true, plain: true});
+      result = JSON.parse(JSON.stringify(result))
+    }
+    // const result = await req.models.Liv2FilteringInterception.create(insertData);
     req.sequelize.close().then(() => {
       console.log('connection closed');
     });
     return res.send({
+      data: result,
       message: `Successfully created!`,
     });
   } catch (error) {
@@ -50,6 +69,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
+    const updateData = req.body.data;
     if (!req.params.id) {
       return res.status(500).send({
         message: `Could not find the record to update.`,
@@ -79,7 +99,7 @@ router.put('/:id', async (req, res) => {
       });
     }
 
-    if (curWeight) {
+    if (curWeight && updateData.weight) {
       // if weight is going forward
       if (curWeight > updateData.weight) {
         await req.models.Liv2FilteringInterception.increment(
@@ -109,13 +129,17 @@ router.put('/:id', async (req, res) => {
       }
     }
 
-    await req.models.Liv2FilteringInterception.update(updateData, {
+    const result = await req.models.Liv2FilteringInterception.update(updateData, {
       where: { irule_id: req.params.id },
+      returning: true,
+      plain: true
     });
     req.sequelize.close().then(() => {
+      console.log(result)
       console.log('connection closed');
     });
     return res.send({
+      data: result,
       message: `Successfully updated!`,
     });
   } catch (error) {

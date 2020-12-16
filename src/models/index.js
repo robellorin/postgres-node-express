@@ -6,9 +6,7 @@ const connectDB = (config) => {
     config.username,
     config.password,
     {
-      // Uncomment this on production
-
-      host: config.ip,
+      host: config.ip || "127.0.0.1",
       port: config.port,
       dialect: 'postgres',
       pool: {
