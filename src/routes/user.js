@@ -164,13 +164,42 @@ router.put('/:id', async (req, res, next) => {
     }
 
     const data = req.body;
-    await req.models.Liv2Users.update(data, {
+    const result = await req.models.Liv2Users.update(data, {
       where: { user_id: req.params.id },
+      returning: true
     });
     req.sequelize.close().then(() => {
       console.log('connection closed');
     });
     return res.send({
+      data: result,
+      message: `Successfully updated!`,
+    });
+  } catch (error) {
+    req.sequelize.close().then(() => {
+      console.log('connection closed');
+    });
+    console.log(error);
+    return res.status(500).send({
+      message: error,
+    });
+  }
+});
+
+router.put('/', async (req, res, next) => {
+  try {
+    const condition = req.body.query;
+
+    const data = req.body.data;
+    const result = await req.models.Liv2Users.update(data, {
+      where: condition,
+      returning: true
+    });
+    req.sequelize.close().then(() => {
+      console.log('connection closed');
+    });
+    return res.send({
+      data: result,
       message: `Successfully updated!`,
     });
   } catch (error) {
@@ -186,7 +215,7 @@ router.put('/:id', async (req, res, next) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { user_label, user_comments, group_id } = req.body;
+    const { user_label, user_comments, group_id } = req.body.data;
     const newUser = await req.models.Liv2Users.create({
       is_group: true,
       user_label,
@@ -202,7 +231,10 @@ router.post('/', async (req, res) => {
     });
     return res.send({
       message: `Successfully crated!`,
-      data: newUser,
+      data: {
+        newUser,
+        newUserGroup
+      },
     });
   } catch (err) {
     req.sequelize.close().then(() => {
@@ -217,7 +249,7 @@ router.post('/', async (req, res) => {
 
 router.patch('/:id', async (req, res) => {
   try {
-    const { user_label, user_comments } = req.body;
+    const { user_label, user_comments } = req.body.data;
     const updatedUser = await req.models.Liv2Users.update(
       {
         user_label,
@@ -251,7 +283,7 @@ router.patch('/:id', async (req, res) => {
 
 router.get('/active', async (req, res) => {
   try {
-    const { aduser_ip_lastseen, op } = req.body;
+    const { aduser_ip_lastseen, op } = req.body.query;
 
     const users = await req.models.Liv2FilterAdUsersList.findAll({
       include: [

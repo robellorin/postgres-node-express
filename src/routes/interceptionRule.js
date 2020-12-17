@@ -1,4 +1,5 @@
 import { Router } from 'express';
+const { Op } = require('sequelize');
 
 const router = Router();
 
@@ -8,6 +9,31 @@ router.get('/', async (req, res) => {
     const interceptionRules = await req.models.Liv2FilteringInterception.findAll(
       {
         where: condition,
+      },
+    );
+    req.sequelize.close().then(() => {
+      console.log('connection closed');
+    });
+    return res.send(interceptionRules);
+  } catch (error) {
+    console.log(error);
+    req.sequelize.close().then(() => {
+      console.log('connection closed');
+    });
+    res.status(500).send({
+      message: error.toString(),
+    });
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const interceptionRules = await req.models.Liv2FilteringInterception.findAll(
+      {
+        where: {
+          irule_id: id,
+        },
       },
     );
     req.sequelize.close().then(() => {
@@ -41,11 +67,11 @@ router.post('/', async (req, res) => {
     let result = null;
     if (Array.isArray(insertData)) {
       insertData.map((data)=>data.weight = ++maxWeight)
-      result = await req.models.Liv2FilteringInterception.bulkCreate(insertData, {returning: true, plain: true});
+      result = await req.models.Liv2FilteringInterception.bulkCreate(insertData, {returning: true});
       // result = JSON.parse(JSON.stringify(result))
     } else {
       insertData.weight = ++maxWeight;
-      result = await req.models.Liv2FilteringInterception.create(insertData, {returning: true, plain: true});
+      result = await req.models.Liv2FilteringInterception.create(insertData, {returning: true});
       result = JSON.parse(JSON.stringify(result))
     }
     // const result = await req.models.Liv2FilteringInterception.create(insertData);
@@ -131,11 +157,42 @@ router.put('/:id', async (req, res) => {
 
     const result = await req.models.Liv2FilteringInterception.update(updateData, {
       where: { irule_id: req.params.id },
-      returning: true,
-      plain: true
+      returning: true
     });
     req.sequelize.close().then(() => {
       console.log(result)
+      console.log('connection closed');
+    });
+    return res.send({
+      data: result,
+      message: `Successfully updated!`,
+    });
+  } catch (error) {
+    req.sequelize.close().then(() => {
+      console.log('connection closed');
+    });
+    console.log(error);
+    res.status(500).send({
+      message: error,
+    });
+  }
+});
+
+router.put('/', async (req, res) => {
+  try {
+    const query = req.body.query;
+    const updateData = req.body.data;
+    if (updateData.weight) {
+      return res.status(500).send({
+        message: `Please use single update mode to update weight.`,
+      });
+    }
+
+    const result = await req.models.Liv2FilteringInterception.update(updateData, {
+      where: query,
+      returning: true
+    });
+    req.sequelize.close().then(() => {
       console.log('connection closed');
     });
     return res.send({

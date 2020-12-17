@@ -12,7 +12,7 @@ const dbaccess = async (ip, token) => {
     }
     axios.defaults.headers.common.Authorization = token;
     const res = await axios.get(
-      `${httpHeader}${formatedIP}get_access`,
+      `${httpHeader}${formatedIP}get_access.php`,
     );
     if (res) {
       return res.data;
