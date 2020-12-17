@@ -1,9 +1,9 @@
 import user from './user';
 import interceptionRules from './interceptionRule';
-import shell from './shell';
+import reload from './reload';
 
 export default {
   user,
   interceptionRules,
-  shell
+  reload
 };
