@@ -1,6 +1,6 @@
 const liv2_rules = (sequelize, DataTypes) => {
   const Liv2Rules = sequelize.define(
-    'liv2_rules',
+    'Rules',
     {
       user_to_policy_id: {
         type: DataTypes.INTEGER,

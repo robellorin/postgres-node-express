@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import Sequelize from 'sequelize';
 const { Op } = require('sequelize');
 
 const router = Router();
@@ -27,17 +28,26 @@ router.get('/', async (req, res) => {
     let condition = {};
     let adCondition = {};
     let inetCondition = {};
-    let adUserLastSeenCondition = {};
-    if (AD && AD.lastSeenUsersCount) {
-      adUserLastSeenCondition = {
-        order: [['user_id', 'DESC']],
-        limit: AD.lastSeenUsersCount
+    let adUserLastSeenDaysCondition = {};
+    if (AD && AD.lastSeenDays) {
+      adUserLastSeenDaysCondition = {
+        aduser_ip_lastseen: {
+          [Op.gte]: Sequelize.literal(`(now() - interval '${AD.lastSeenDays} day')`),
+        },
       };
     }
+    let adLastSeenInclude = null;
+    adLastSeenInclude = {
+      model: req.models.Liv2FilterAdusersIplist,
+      required: (AD && AD.lastSeenDays) ? true: false,
+      where: adUserLastSeenDaysCondition
+    }
+
     if (usertypes.length === 1 && usertypes[0] === 'AD') {
       include.push({
         model: req.models.Liv2FilterAdUsersList,
-        required: true
+        required: true,
+        include: adLastSeenInclude
       });
     } else if (usertypes.length === 1 && usertypes[0] === 'INET') {
       include.push({
@@ -52,7 +62,7 @@ router.get('/', async (req, res) => {
       let adInclude = {
         model: req.models.Liv2FilterAdUsersList,
         required: true,
-        through: { attributes: [], ...adUserLastSeenCondition }
+        include: adLastSeenInclude
       }
       include.push(inetInclude);
       include.push(adInclude);
@@ -60,6 +70,7 @@ router.get('/', async (req, res) => {
       adIncludeArr.push({
         model: req.models.Liv2FilterAdUsersList,
         required: true,
+        include: adLastSeenInclude
       });
       inetIncludeArr.push({
         model: req.models.Liv2FilterIprangesList,
@@ -74,6 +85,11 @@ router.get('/', async (req, res) => {
             [Op[AD.Op]]: AD.user_id,
           },
         },
+        include: {
+          model: req.models.Liv2FilterAdusersIplist,
+          required: true,
+          include: adLastSeenInclude
+        }
       };
       inetCondition = {
         where: {
@@ -91,7 +107,7 @@ router.get('/', async (req, res) => {
               [Op[AD.Op]]: AD.user_id,
             },
           },
-          ...adUserLastSeenCondition
+          include: adLastSeenInclude
         };
       }
 
@@ -120,7 +136,6 @@ router.get('/', async (req, res) => {
       const adUsersArr = {
         ...adCondition,
         include: adIncludeArr,
-        ...adUserLastSeenCondition,
         raw: true,
         nest: true
       }

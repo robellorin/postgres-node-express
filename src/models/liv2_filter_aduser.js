@@ -1,6 +1,6 @@
 const liv2_filter_aduser = (sequelize, DataTypes) => {
   const Liv2FilterAduser = sequelize.define(
-    'liv2_filter_aduser',
+    'FilterAduser',
     {
       aduser_filter_id: {
         type: DataTypes.INTEGER,

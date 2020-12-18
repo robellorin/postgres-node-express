@@ -1,6 +1,6 @@
 const liv2_filter_adusers_iplist = (sequelize, DataTypes) => {
   const Liv2FilterAdusersIplist = sequelize.define(
-    'liv2_filter_adusers_iplist',
+    'FilterAdusersIplist',
     {
       aduser_ip_id: {
         type: DataTypes.INTEGER,
@@ -21,11 +21,16 @@ const liv2_filter_adusers_iplist = (sequelize, DataTypes) => {
   );
 
   Liv2FilterAdusersIplist.associate = (models) => {
+    // Liv2FilterAdusersIplist.belongsTo(models.Liv2Users, {
+    //   foreignKey: 'aduser_id',
+    // });
     Liv2FilterAdusersIplist.belongsTo(models.Liv2Users, {
+      through: models.Liv2FilterAduser,
       foreignKey: 'aduser_id',
     });
+
     Liv2FilterAdusersIplist.belongsTo(
-      models.Liv2FilterAdusersIplist,
+      models.Liv2FilterAdUsersList,
       {
         foreignKey: 'aduser_id',
       },

@@ -1,6 +1,6 @@
 const liv2_filter_inet = (sequelize, DataTypes) => {
   const Liv2FilterInet = sequelize.define(
-    'liv2_filter_inet',
+    'FilterInet',
     {
       inet_filter_id: {
         type: DataTypes.INTEGER,

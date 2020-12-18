@@ -1,6 +1,6 @@
 const liv2_user_in_groups = (sequelize, DataTypes) => {
   const Liv2UserInGroups = sequelize.define(
-    'liv2_user_in_groups',
+    'UserInGroups',
     {
       user_in_group_id: {
         type: DataTypes.INTEGER,

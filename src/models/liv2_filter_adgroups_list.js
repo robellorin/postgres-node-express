@@ -1,6 +1,6 @@
 const liv2_filter_adgroups_list = (sequelize, DataTypes) => {
   const Liv2FilterAdgroupsList = sequelize.define(
-    'liv2_filter_adgroups_list',
+    'FilterAdgroupsList',
     {
       adgroup_id: {
         type: DataTypes.INTEGER,

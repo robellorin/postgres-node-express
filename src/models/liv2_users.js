@@ -1,6 +1,6 @@
 const liv2_users = (sequelize, DataTypes) => {
   const Liv2Users = sequelize.define(
-    'liv2_users',
+    'Users',
     {
       user_id: {
         type: DataTypes.INTEGER,
