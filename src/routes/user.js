@@ -29,12 +29,17 @@ router.get('/', async (req, res) => {
     let adCondition = {};
     let inetCondition = {};
     let adUserLastSeenDaysCondition = {};
-    if (AD && AD.lastSeenDays) {
+    let order = [];
+    const orderCondition = [
+      [Sequelize.literal(`"FilterAdusersLists->FilterAdusersIplists".`), 'aduser_ip_lastseen', 'DESC']
+    ];
+    if (AD && AD.lastSeenDays && usertypes.indexOf("AD")>=0) {
       adUserLastSeenDaysCondition = {
         aduser_ip_lastseen: {
           [Op.gte]: Sequelize.literal(`(now() - interval '${AD.lastSeenDays} day')`),
         },
       };
+      order = orderCondition;
     }
     let adLastSeenInclude = null;
     adLastSeenInclude = {
@@ -43,18 +48,18 @@ router.get('/', async (req, res) => {
       where: adUserLastSeenDaysCondition
     }
 
-    if (usertypes.length === 1 && usertypes[0] === 'AD') {
+    if (usertypes.indexOf("AD")>=0 && usertypes.indexOf("INET")<0) {
       include.push({
         model: req.models.Liv2FilterAdUsersList,
         required: true,
         include: adLastSeenInclude
       });
-    } else if (usertypes.length === 1 && usertypes[0] === 'INET') {
+    } else if (usertypes.indexOf("AD")<0 && usertypes.indexOf("INET")>=0) {
       include.push({
         model: req.models.Liv2FilterIprangesList,
         required: true,
       });
-    } else if (usertypes.length === 2 && userOp === 'and') {
+    } else if (usertypes.indexOf("AD")>=0 && usertypes.indexOf("INET")>=0 && userOp === 'and') {
       let inetInclude = {
         model: req.models.Liv2FilterIprangesList,
         required: true
@@ -66,7 +71,7 @@ router.get('/', async (req, res) => {
       }
       include.push(inetInclude);
       include.push(adInclude);
-    } else if (usertypes.length === 2 && userOp === 'or') {
+    } else if (usertypes.indexOf("AD")>=0 && usertypes.indexOf("INET")>=0 && userOp === 'or') {
       adIncludeArr.push({
         model: req.models.Liv2FilterAdUsersList,
         required: true,
@@ -78,7 +83,7 @@ router.get('/', async (req, res) => {
       });
     }
 
-    if (usertypes.length === 2 && userOp === 'or') {
+    if (usertypes.indexOf("AD")>=0 && usertypes.indexOf("INET")>=0 && userOp === 'or') {
       adCondition = {
         where: {
           user_id: {
@@ -89,7 +94,8 @@ router.get('/', async (req, res) => {
           model: req.models.Liv2FilterAdusersIplist,
           required: true,
           include: adLastSeenInclude
-        }
+        },
+        order
       };
       inetCondition = {
         where: {
@@ -109,6 +115,9 @@ router.get('/', async (req, res) => {
           },
           include: adLastSeenInclude
         };
+        if (AD.lastSeenDays) {
+          condition.order = order
+        }
       }
 
       if (INET && INET.user_id && INET.Op) {
@@ -125,34 +134,47 @@ router.get('/', async (req, res) => {
 
     let users = null;
 
-    if (usertypes.length === 2 && userOp === 'or') {
+    if (usertypes.indexOf("AD")>=0 && usertypes.indexOf("INET")>=0 && userOp === 'or') {
       const inetUsersArr = {
         ...inetCondition,
-        include: inetIncludeArr,
-        raw: true,
-        nest: true
+        include: inetIncludeArr
       }
       let inetUsers = await req.models.Liv2Users.findAll(inetUsersArr);
       const adUsersArr = {
         ...adCondition,
         include: adIncludeArr,
-        raw: true,
-        nest: true
+        order
       }
       let adUsers = await req.models.Liv2Users.findAll(adUsersArr);
-      users = arrayMergeOr(inetUsers, adUsers)
+      const adUsersPlainResult = adUsers.map((node) => node.get({ plain: true }));
+      const inetUsersPlainResult = inetUsers.map((node) => node.get({ plain: true }));
+      users = arrayMergeOr(inetUsersPlainResult, adUsersPlainResult)
     } else {
       const findAllCondition = {
         ...condition,
-        include
+        include,
+        order
       }
       users = await req.models.Liv2Users.findAll(findAllCondition);
+    }
+
+    const lastUserId = await req.models.Liv2Users.findOne(
+      {
+        order: [
+          ['user_id', 'DESC']
+        ]
+      }
+    )
+
+    const retVal = {
+      lastUserId: lastUserId.user_id,
+      users
     }
 
     req.sequelize.close().then(() => {
       console.log('connection closed');
     });
-    return res.send(users);
+    return res.send(retVal);
   } catch (err) {
     req.sequelize.close().then(() => {
       console.log('connection closed');

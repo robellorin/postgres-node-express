@@ -12,7 +12,6 @@ export default async (req, res, next) => {
         .json({ success: false, msg: 'PGHOST is missing' });
 
     const dbaccessResult = await dbaccess(pghost, authorization);
-
     if (!dbaccessResult || !dbaccessResult.db_user)
       return res
         .status(500)
