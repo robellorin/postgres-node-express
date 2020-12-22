@@ -15,7 +15,7 @@ export default async (req, res, next) => {
     if (!dbaccessResult || !dbaccessResult.db_user)
       return res
         .status(500)
-        .json({ success: false, msg: 'DB connection failed' });
+        .json({ success: false, msg: 'Auth Failed' });
 
     const dbCred = {
       database: dbaccessResult.db_name,
