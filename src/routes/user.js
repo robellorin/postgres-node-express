@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
     let { usertypes, userOp } = req.body;
     usertypes = usertypes.map(usertype=>usertype.toUpperCase())
     userOp = userOp? userOp.toUpperCase(): null;
-    const { AD, INET, Group, System } = req.body.query;
+    const { AD, INET, Groups, System } = req.body.query;
     const include = [];
     const inetIncludeArr = [];
     const adIncludeArr = [];
@@ -52,11 +52,11 @@ router.get('/', async (req, res) => {
 
     let groupInclude = null;
     let userGroupCondition = null;
-    if (Group && System) {
+    if (Groups && System) {
       userGroupCondition = {
         [Op.gt]: 0
       }
-    } else if (Group) {
+    } else if (Groups) {
       userGroupCondition = {
         [Op.gt]: 1000
       }
@@ -183,7 +183,7 @@ router.get('/', async (req, res) => {
         ...inetCondition,
         include: inetIncludeArr
       }
-      if (Group || System) {
+      if (Groups || System) {
         adIncludeArr.push(groupInclude);
         inetIncludeArr.push(groupInclude);
       }
@@ -193,7 +193,7 @@ router.get('/', async (req, res) => {
       const inetUsersPlainResult = inetUsers.map((node) => node.get({ plain: true }));
       users = arrayMergeOr(inetUsersPlainResult, adUsersPlainResult)
     } else {
-      if (Group || System) {
+      if (Groups || System) {
         include.push(groupInclude);
       }
       const findAllCondition = {
