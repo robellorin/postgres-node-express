@@ -185,7 +185,7 @@ router.get('/', async (req, res) => {
       }
       if (Group || System) {
         adIncludeArr.push(groupInclude);
-        inetUsersArr.push(groupInclude);
+        inetIncludeArr.push(groupInclude);
       }
       let adUsers = await req.models.Liv2Users.findAll(adUsersArr);
       const adUsersPlainResult = adUsers.map((node) => node.get({ plain: true }));
