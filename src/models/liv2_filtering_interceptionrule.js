@@ -1,6 +1,6 @@
 const liv2_filtering_interceptionrule = (sequelize, DataTypes) => {
   const Liv2FilteringInterception = sequelize.define(
-    'FilteringInterceptionrule ',
+    'Interceptionrule ',
     {
       irule_id: {
         type: DataTypes.INTEGER,

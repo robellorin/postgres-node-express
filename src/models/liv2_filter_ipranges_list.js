@@ -1,6 +1,6 @@
 const liv2_filter_ipranges_list = (sequelize, DataTypes) => {
   const Liv2FilterIprangesList = sequelize.define(
-    'FilterIprangesList',
+    'IprangesList',
     {
       iprange_id: {
         type: DataTypes.INTEGER,

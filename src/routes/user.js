@@ -33,7 +33,7 @@ router.get('/', async (req, res) => {
     let adUserLastSeenDaysCondition = {};
     let order = [];
     const orderCondition = [
-      [Sequelize.literal(`"FilterAdusersLists->FilterAdusersIplists".`), 'aduser_ip_lastseen', 'DESC']
+      [Sequelize.literal(`"AdusersLists->AdusersIplists".`), 'aduser_ip_lastseen', 'DESC']
     ];
     if (AD && AD.lastSeenDays && usertypes.indexOf("AD")>=0) {
       adUserLastSeenDaysCondition = {
@@ -110,30 +110,35 @@ router.get('/', async (req, res) => {
         };
       }
     } else {
+      let userIdCombQuery = [];
       if (usertypes.indexOf("AD")>=0 && AD && AD.user_id && AD.Op) {
-        condition = {
-          ...condition,
-          where: {
-            user_id: {
-              [Op[AD.Op]]: AD.user_id,
-            },
-          },
-          include: adLastSeenInclude
-        };
-        if (AD.lastSeenDays) {
-          condition.order = order
-        }
+        userIdCombQuery.push(
+          {
+            [Op[AD.Op]]: AD.user_id,
+          }
+        )
       }
 
       if (usertypes.indexOf("INET")>=0 && INET && INET.user_id && INET.Op) {
-        condition = {
-          ...condition,
-          where: {
-            user_id: {
-              [Op[INET.Op]]: INET.user_id,
-            },
+        userIdCombQuery.push(
+          {
+            [Op[INET.Op]]: INET.user_id,
+          }
+        )
+      }
+
+      condition = {
+        ...condition,
+        where: {
+          user_id: {
+            [Op.and]: userIdCombQuery
           },
-        };
+        },
+        include: adLastSeenInclude
+      };
+
+      if (usertypes.indexOf("AD")>=0) {
+        condition.order = order
       }
     }
 
@@ -160,6 +165,7 @@ router.get('/', async (req, res) => {
         include,
         order
       }
+      console.log(JSON.stringify(findAllCondition))
       users = await req.models.Liv2Users.findAll(findAllCondition);
     }
 
