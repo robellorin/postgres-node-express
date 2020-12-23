@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
     let { usertypes, userOp } = req.body;
     usertypes = usertypes.map(usertype=>usertype.toUpperCase())
     userOp = userOp? userOp.toUpperCase(): null;
-    const { AD, INET } = req.body.query;
+    const { AD, INET, Group, System } = req.body.query;
     const include = [];
     const inetIncludeArr = [];
     const adIncludeArr = [];
@@ -48,6 +48,35 @@ router.get('/', async (req, res) => {
       model: req.models.Liv2FilterAdusersIplist,
       required: (usertypes.indexOf("AD")>=0 && AD && AD.lastSeenDays) ? true: false,
       where: adUserLastSeenDaysCondition
+    }
+
+    let groupInclude = null;
+    let userGroupCondition = null;
+    if (Group && System) {
+      userGroupCondition = {
+        [Op.gt]: 0
+      }
+    } else if (Group) {
+      userGroupCondition = {
+        [Op.gt]: 1000
+      }
+    } else if (System) {
+      userGroupCondition = {
+        [Op.between]: [0, 999]
+      }
+    } else {
+      userGroupCondition = {
+        [Op.gt]: 1000
+      }
+    }
+    groupInclude = {
+      model: req.models.Liv2UserInGroups,
+      required: true,
+      where: {
+        user_id: {
+          ...userGroupCondition
+        }
+      }
     }
 
     if (usertypes.indexOf("AD")>=0 && usertypes.indexOf("INET")<0) {
@@ -83,9 +112,7 @@ router.get('/', async (req, res) => {
         model: req.models.Liv2FilterIprangesList,
         required: true,
       });
-    }
 
-    if (usertypes.indexOf("AD")>=0 && usertypes.indexOf("INET")>=0 && userOp === 'OR') {
       if (AD && AD.user_id && AD.Op) {
         adCondition = {
           where: {
@@ -109,7 +136,9 @@ router.get('/', async (req, res) => {
           },
         };
       }
-    } else {
+    }
+
+    if ( !(usertypes.indexOf("AD")>=0 && usertypes.indexOf("INET")>=0 && userOp === 'OR') ) {
       let userIdCombQuery = [];
       if (usertypes.indexOf("AD")>=0 && AD && AD.user_id && AD.Op) {
         userIdCombQuery.push(
@@ -154,18 +183,20 @@ router.get('/', async (req, res) => {
         ...inetCondition,
         include: inetIncludeArr
       }
+      adIncludeArr.push(groupInclude);
+      inetUsersArr.push(groupInclude);
       let adUsers = await req.models.Liv2Users.findAll(adUsersArr);
       const adUsersPlainResult = adUsers.map((node) => node.get({ plain: true }));
       let inetUsers = await req.models.Liv2Users.findAll(inetUsersArr);
       const inetUsersPlainResult = inetUsers.map((node) => node.get({ plain: true }));
       users = arrayMergeOr(inetUsersPlainResult, adUsersPlainResult)
     } else {
+      include.push(groupInclude);
       const findAllCondition = {
         ...condition,
         include,
         order
       }
-      console.log(JSON.stringify(findAllCondition))
       users = await req.models.Liv2Users.findAll(findAllCondition);
     }
 

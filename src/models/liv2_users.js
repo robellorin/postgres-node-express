@@ -38,6 +38,9 @@ const liv2_users = (sequelize, DataTypes) => {
     Liv2Users.hasMany(models.Liv2UserInGroups, {
       foreignKey: 'user_id',
     });
+    Liv2Users.hasMany(models.Liv2FilterAdgroupsList, {
+      foreignKey: 'group_id',
+    });
     Liv2Users.hasMany(models.Liv2UsersToPolicies, {
       foreignKey: 'user_id',
     });
