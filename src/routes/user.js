@@ -183,15 +183,19 @@ router.get('/', async (req, res) => {
         ...inetCondition,
         include: inetIncludeArr
       }
-      adIncludeArr.push(groupInclude);
-      inetUsersArr.push(groupInclude);
+      if (Group || System) {
+        adIncludeArr.push(groupInclude);
+        inetUsersArr.push(groupInclude);
+      }
       let adUsers = await req.models.Liv2Users.findAll(adUsersArr);
       const adUsersPlainResult = adUsers.map((node) => node.get({ plain: true }));
       let inetUsers = await req.models.Liv2Users.findAll(inetUsersArr);
       const inetUsersPlainResult = inetUsers.map((node) => node.get({ plain: true }));
       users = arrayMergeOr(inetUsersPlainResult, adUsersPlainResult)
     } else {
-      include.push(groupInclude);
+      if (Group || System) {
+        include.push(groupInclude);
+      }
       const findAllCondition = {
         ...condition,
         include,
