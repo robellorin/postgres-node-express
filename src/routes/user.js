@@ -82,14 +82,14 @@ router.get('/', async (req, res) => {
     groupInclude = {
       model: req.models.Liv2UserInGroups, as: 'Groups',
       required: true,
-      attributes:[['user_id', 'group_id']],
+      attributes:[['in_group_id', 'group_id']],
       include: {
         model: req.models.Liv2Users, as: 'groupInfo',
         required: true,
         attributes: [['user_label', 'group_label']]
       },
       where: {
-        user_id: {
+        in_group_id: {
           ...userGroupCondition,
           [Op.notIn]: adUserGroupList
         }
