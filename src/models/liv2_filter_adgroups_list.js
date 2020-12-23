@@ -35,7 +35,7 @@ const liv2_filter_adgroups_list = (sequelize, DataTypes) => {
       },
     );
     Liv2FilterAdgroupsList.belongsTo(models.Liv2Users, {
-      foreignKey: 'user_id',
+      foreignKey: 'user_id'
     });
   };
 

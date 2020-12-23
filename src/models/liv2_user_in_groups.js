@@ -20,6 +20,7 @@ const liv2_user_in_groups = (sequelize, DataTypes) => {
   Liv2UserInGroups.associate = (models) => {
     Liv2UserInGroups.belongsTo(models.Liv2Users, {
       foreignKey: 'user_id',
+      as: "groupInfo"
     });
   };
 

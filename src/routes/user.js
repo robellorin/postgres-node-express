@@ -69,12 +69,29 @@ router.get('/', async (req, res) => {
         [Op.gt]: 1000
       }
     }
+
+    let adUserGroupList = await req.models.Liv2FilterAdgroupsList.findOne(
+      {
+        attributes: [[Sequelize.fn('array_agg', Sequelize.col('group_id')), 'group_ids']]
+      }
+    )
+    adUserGroupList = adUserGroupList.get({ plain: true })
+    adUserGroupList = adUserGroupList.group_ids;
+    console.log(adUserGroupList);
+
     groupInclude = {
-      model: req.models.Liv2UserInGroups,
+      model: req.models.Liv2UserInGroups, as: 'Groups',
       required: true,
+      attributes:[['user_id', 'group_id']],
+      include: {
+        model: req.models.Liv2Users, as: 'groupInfo',
+        required: true,
+        attributes: [['user_label', 'group_label']]
+      },
       where: {
         user_id: {
-          ...userGroupCondition
+          ...userGroupCondition,
+          [Op.notIn]: adUserGroupList
         }
       }
     }
