@@ -81,7 +81,7 @@ router.get('/', async (req, res) => {
 
     groupInclude = {
       model: req.models.Liv2UserInGroups, as: 'Groups',
-      required: true,
+      required: (!Groups && !System)? false : true,
       attributes:[['in_group_id', 'group_id']],
       include: {
         model: req.models.Liv2Users, as: 'groupInfo',
@@ -200,19 +200,15 @@ router.get('/', async (req, res) => {
         ...inetCondition,
         include: inetIncludeArr
       }
-      if (Groups || System) {
-        adIncludeArr.push(groupInclude);
-        inetIncludeArr.push(groupInclude);
-      }
+      adIncludeArr.push(groupInclude);
+      inetIncludeArr.push(groupInclude);
       let adUsers = await req.models.Liv2Users.findAll(adUsersArr);
       const adUsersPlainResult = adUsers.map((node) => node.get({ plain: true }));
       let inetUsers = await req.models.Liv2Users.findAll(inetUsersArr);
       const inetUsersPlainResult = inetUsers.map((node) => node.get({ plain: true }));
       users = arrayMergeOr(inetUsersPlainResult, adUsersPlainResult)
     } else {
-      if (Groups || System) {
-        include.push(groupInclude);
-      }
+      include.push(groupInclude);
       const findAllCondition = {
         ...condition,
         include,
