@@ -18,6 +18,21 @@ const arrayMergeAnd = (arr1, arr2) => {
   return arrayMergeOr(arr3, arr4);
 }
 
+const makeFlattern = (user) => {
+  const retUser = user;
+  let Groups = retUser.Groups;
+  const newGroups = Groups.map((obj)=> {
+    const newObj = {
+      ...obj,
+      ...obj.groupInfo
+    }
+    delete newObj.groupInfo;
+    return newObj;
+  })
+  retUser.Groups = newGroups
+  return retUser
+}
+
 router.get('/', async (req, res) => {
   try {
     let { usertypes, userOp } = req.body;
@@ -77,12 +92,12 @@ router.get('/', async (req, res) => {
     )
     adUserGroupList = adUserGroupList.get({ plain: true })
     adUserGroupList = adUserGroupList.group_ids;
-    console.log(adUserGroupList);
 
     groupInclude = {
       model: req.models.Liv2UserInGroups, as: 'Groups',
       required: (!Groups && !System)? false : true,
       attributes:[['in_group_id', 'group_id']],
+      raw: true,
       include: {
         model: req.models.Liv2Users, as: 'groupInfo',
         required: true,
@@ -207,6 +222,7 @@ router.get('/', async (req, res) => {
       let inetUsers = await req.models.Liv2Users.findAll(inetUsersArr);
       const inetUsersPlainResult = inetUsers.map((node) => node.get({ plain: true }));
       users = arrayMergeOr(inetUsersPlainResult, adUsersPlainResult)
+      users = users.map((user) => makeFlattern(user))
     } else {
       include.push(groupInclude);
       const findAllCondition = {
@@ -215,6 +231,8 @@ router.get('/', async (req, res) => {
         order
       }
       users = await req.models.Liv2Users.findAll(findAllCondition);
+      users = users.map((node) => makeFlattern(node.get({ plain: true })));
+      // users = users.map((user) => makeFlattern(user))
     }
 
     const lastUserId = await req.models.Liv2Users.findOne(
