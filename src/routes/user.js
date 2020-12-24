@@ -29,7 +29,20 @@ const makeFlattern = (user) => {
     delete newObj.groupInfo;
     return newObj;
   })
+
   retUser.Groups = newGroups
+  
+  let Adusers = retUser.Adusers;
+  const newAdusersLists = Adusers.map((obj)=> {
+    const newObj = {
+      ...obj.AdDomainsList,
+      ...obj,
+    }
+    delete newObj.AdDomainsList;
+    return newObj;
+  })
+  retUser.Adusers = newAdusersLists
+  
   return retUser
 }
 
@@ -48,7 +61,7 @@ router.get('/', async (req, res) => {
     let adUserLastSeenDaysCondition = {};
     let order = [];
     const orderCondition = [
-      [Sequelize.literal(`"AdusersLists->AdusersIplists".`), 'aduser_ip_lastseen', 'DESC']
+      [Sequelize.literal(`"${req.models.Liv2FilterAdUsersList.name}->${req.models.Liv2FilterAdusersIplist.name}s".`), 'aduser_ip_lastseen', 'DESC']
     ];
     if (AD && AD.lastSeenDays && usertypes.indexOf("AD")>=0) {
       adUserLastSeenDaysCondition = {
@@ -63,6 +76,13 @@ router.get('/', async (req, res) => {
       model: req.models.Liv2FilterAdusersIplist,
       required: (usertypes.indexOf("AD")>=0 && AD && AD.lastSeenDays) ? true: false,
       where: adUserLastSeenDaysCondition
+    }
+
+    let domainInclude = null;
+    domainInclude = {
+      model: req.models.Liv2FilterAdDomainsList,
+      attributes: [['addomain_domain', 'domain_name']],
+      required: false,
     }
 
     let groupInclude = null;
@@ -129,7 +149,7 @@ router.get('/', async (req, res) => {
         attributes: ["aduser_id"],
         through: { attributes: [] },
         required: true,
-        include: adLastSeenInclude
+        include: [domainInclude, adLastSeenInclude]
       }
       let inetInclude = {
         model: req.models.Liv2FilterIprangesList,

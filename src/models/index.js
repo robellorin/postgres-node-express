@@ -42,6 +42,9 @@ const connectDB = (config) => {
     Liv2FilterAdgroupsList: sequelize.import(
       './liv2_filter_adgroups_list',
     ),
+    Liv2FilterAdDomainsList: sequelize.import(
+      './liv2_filter_addomains_list',
+    ),
   };
 
   Object.keys(models).forEach((key) => {

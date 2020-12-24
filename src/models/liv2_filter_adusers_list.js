@@ -1,6 +1,6 @@
 const liv2_filter_adusers_list = (sequelize, DataTypes) => {
   const Liv2FilterAdUsersList = sequelize.define(
-    'AdusersList',
+    'Adusers',
     {
       aduser_id: {
         type: DataTypes.INTEGER,
@@ -46,6 +46,13 @@ const liv2_filter_adusers_list = (sequelize, DataTypes) => {
       {
         through: models.Liv2FilterAdusersToAdgroups,
         foreignKey: 'aduser_id',
+      },
+    );
+
+    Liv2FilterAdUsersList.belongsTo(
+      models.Liv2FilterAdDomainsList,
+      {
+        foreignKey: 'addomain_id',
       },
     );
 

@@ -27,13 +27,10 @@ const liv2_filter_adgroups_list = (sequelize, DataTypes) => {
   );
 
   Liv2FilterAdgroupsList.associate = (models) => {
-    Liv2FilterAdgroupsList.belongsToMany(
-      models.Liv2FilterAdUsersList,
-      {
-        through: models.Liv2FilterAdusersToAdgroups,
-        foreignKey: 'aduser_id',
-      },
-    );
+    Liv2FilterAdgroupsList.belongsToMany(models.Liv2FilterAdUsersList, {
+      through: models.Liv2FilterAdusersToAdgroups,
+      foreignKey: 'aduser_id',
+    });
     Liv2FilterAdgroupsList.belongsTo(models.Liv2Users, {
       foreignKey: 'user_id'
     });
