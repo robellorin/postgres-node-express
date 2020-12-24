@@ -136,7 +136,7 @@ router.get('/', async (req, res) => {
         model: req.models.Liv2FilterAdUsersList,
         attributes: ["aduser_id"],
         required: true,
-        include: adLastSeenInclude
+        include: [domainInclude, adLastSeenInclude]
       });
     } else if (usertypes.indexOf("AD")<0 && usertypes.indexOf("INET")>=0) {
       include.push({
@@ -162,7 +162,7 @@ router.get('/', async (req, res) => {
         model: req.models.Liv2FilterAdUsersList,
         attributes: ["aduser_id"],
         required: true,
-        include: adLastSeenInclude
+        include: [domainInclude, adLastSeenInclude]
       });
       inetIncludeArr.push({
         model: req.models.Liv2FilterIprangesList,
