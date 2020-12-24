@@ -114,6 +114,7 @@ router.get('/', async (req, res) => {
     if (usertypes.indexOf("AD")>=0 && usertypes.indexOf("INET")<0) {
       include.push({
         model: req.models.Liv2FilterAdUsersList,
+        attributes: ["aduser_id"],
         required: true,
         include: adLastSeenInclude
       });
@@ -125,6 +126,8 @@ router.get('/', async (req, res) => {
     } else if (usertypes.indexOf("AD")>=0 && usertypes.indexOf("INET")>=0 && userOp === 'AND') {
       let adInclude = {
         model: req.models.Liv2FilterAdUsersList,
+        attributes: ["aduser_id"],
+        through: { attributes: [] },
         required: true,
         include: adLastSeenInclude
       }
@@ -137,6 +140,7 @@ router.get('/', async (req, res) => {
     } else if (usertypes.indexOf("AD")>=0 && usertypes.indexOf("INET")>=0 && userOp === 'OR') {
       adIncludeArr.push({
         model: req.models.Liv2FilterAdUsersList,
+        attributes: ["aduser_id"],
         required: true,
         include: adLastSeenInclude
       });
@@ -232,7 +236,6 @@ router.get('/', async (req, res) => {
       }
       users = await req.models.Liv2Users.findAll(findAllCondition);
       users = users.map((node) => makeFlattern(node.get({ plain: true })));
-      // users = users.map((user) => makeFlattern(user))
     }
 
     const lastUserId = await req.models.Liv2Users.findOne(
