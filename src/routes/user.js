@@ -21,27 +21,31 @@ const arrayMergeAnd = (arr1, arr2) => {
 const makeFlattern = (user) => {
   const retUser = user;
   let Groups = retUser.Groups;
-  const newGroups = Groups.map((obj)=> {
-    const newObj = {
-      ...obj,
-      ...obj.groupInfo
-    }
-    delete newObj.groupInfo;
-    return newObj;
-  })
+  if (Groups) {
+    const newGroups = Groups.map((obj)=> {
+      const newObj = {
+        ...obj,
+        ...obj.groupInfo
+      }
+      delete newObj.groupInfo;
+      return newObj;
+    })
+    retUser.Groups = newGroups
+  }
 
-  retUser.Groups = newGroups
   
   let Adusers = retUser.Adusers;
-  const newAdusersLists = Adusers.map((obj)=> {
-    const newObj = {
-      ...obj.AdDomainsList,
-      ...obj,
-    }
-    delete newObj.AdDomainsList;
-    return newObj;
-  })
-  retUser.Adusers = newAdusersLists
+  if (Adusers) {
+    const newAdusersLists = Adusers.map((obj)=> {
+      const newObj = {
+        ...obj.AdDomainsList,
+        ...obj,
+      }
+      delete newObj.AdDomainsList;
+      return newObj;
+    })
+    retUser.Adusers = newAdusersLists
+  }
   
   return retUser
 }
@@ -135,6 +139,7 @@ router.get('/', async (req, res) => {
       include.push({
         model: req.models.Liv2FilterAdUsersList,
         attributes: ["aduser_id"],
+        through: { attributes: [] },
         required: true,
         include: [domainInclude, adLastSeenInclude]
       });
@@ -161,6 +166,7 @@ router.get('/', async (req, res) => {
       adIncludeArr.push({
         model: req.models.Liv2FilterAdUsersList,
         attributes: ["aduser_id"],
+        through: { attributes: [] },
         required: true,
         include: [domainInclude, adLastSeenInclude]
       });
