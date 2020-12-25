@@ -35,6 +35,8 @@ const connectDB = (config) => {
     ),
     Liv2UsersToPolicies: sequelize.import('./liv2_users_to_policies'),
     Liv2Rules: sequelize.import('./liv2_rules'),
+    Liv2RulesToUrlPattern: sequelize.import('./liv2_rules_to_urlpattern'),
+    Liv2RulesUrlPatternList: sequelize.import('./liv2_rules_urlpattern_list'),
     Liv2FilterAduser: sequelize.import('./liv2_filter_aduser'),
     Liv2FilterAdusersToAdgroups: sequelize.import(
       './liv2_filter_adusers_to_adgroups',

@@ -2,10 +2,16 @@ const liv2_rules = (sequelize, DataTypes) => {
   const Liv2Rules = sequelize.define(
     'Rules',
     {
-      user_to_policy_id: {
+      rule_id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+      },
+      rule_label: {
+        type: DataTypes.STRING,
+      },
+      rule_type: {
+        type: DataTypes.STRING,
       },
     },
     {
@@ -15,7 +21,8 @@ const liv2_rules = (sequelize, DataTypes) => {
   );
 
   Liv2Rules.associate = (models) => {
-    Liv2Rules.hasMany(models.Liv2UsersToPolicies, {
+    Liv2Rules.belongsToMany(models.Liv2RulesUrlPatternList, {
+      through: models.Liv2RulesToUrlPattern,
       foreignKey: 'rule_id',
     });
   };

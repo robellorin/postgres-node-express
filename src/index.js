@@ -20,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/users', database, routes.user);
 app.use('/api/interceptionRules', database, routes.interceptionRules);
 app.use('/api/reload', database, routes.reload);
+app.use('/api/rules', database, routes.rules);
 app.use('/api/token', routes.token);
 // Start
 
