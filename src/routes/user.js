@@ -55,7 +55,7 @@ router.get('/', async (req, res) => {
     let { usertypes, userOp } = req.body;
     usertypes = usertypes.map(usertype=>usertype.toUpperCase())
     userOp = userOp? userOp.toUpperCase(): null;
-    const { AD, INET, Groups, System } = req.body.query;
+    const { AD, INET, Groups, SysGrp } = req.body.query;
     const include = [];
     const inetIncludeArr = [];
     const adIncludeArr = [];
@@ -91,7 +91,7 @@ router.get('/', async (req, res) => {
 
     let groupInclude = null;
     let userGroupCondition = null;
-    if (Groups && System) {
+    if (Groups && SysGrp) {
       userGroupCondition = {
         [Op.gt]: 0
       }
@@ -99,7 +99,7 @@ router.get('/', async (req, res) => {
       userGroupCondition = {
         [Op.gt]: 1000
       }
-    } else if (System) {
+    } else if (SysGrp) {
       userGroupCondition = {
         [Op.between]: [0, 999]
       }
@@ -119,7 +119,7 @@ router.get('/', async (req, res) => {
 
     groupInclude = {
       model: req.models.Liv2UserInGroups, as: 'Groups',
-      required: (!Groups && !System)? false : true,
+      required: (!Groups && !SysGrp)? false : true,
       attributes:[['in_group_id', 'group_id']],
       raw: true,
       include: {
