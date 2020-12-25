@@ -4,14 +4,14 @@ import dbaccess from '../services/dbaccess';
 
 export default async (req, res, next) => {
   try {
-    const { pghost, authorization } = req.headers;
+    const { livserver, authorization } = req.headers;
 
-    if (!pghost)
+    if (!livserver)
       return res
         .status(500)
-        .json({ success: false, msg: 'PGHOST is missing' });
+        .json({ success: false, msg: 'LivServer is missing' });
 
-    const dbaccessResult = await dbaccess(pghost, authorization);
+    const dbaccessResult = await dbaccess(livserver, authorization);
     if (!dbaccessResult || !dbaccessResult.db_user)
       return res
         .status(500)
@@ -22,7 +22,7 @@ export default async (req, res, next) => {
       username: dbaccessResult.db_user,
       password: dbaccessResult.db_pass,
       port: dbaccessResult.db_port,
-      ip: pghost,
+      ip: livserver,
     };
 
     // const dbCred = {
