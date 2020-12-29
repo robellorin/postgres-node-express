@@ -7,8 +7,8 @@ const phpApiPort = '4540';
 const router = Router();
 router.get('/', async (req, res) => {
   try {
-    const { pghost, authorization } = req.headers;
-    let formatedIP = pghost;
+    const { livserver, authorization } = req.headers;
+    let formatedIP = livserver;
     let token = authorization
 
     if (!(endsWith(formatedIP, '/') && !endsWith(formatedIP, '\\'))) {
