@@ -242,14 +242,14 @@ router.delete('/:id', async (req, res, next) => {
       });
     }
 
-    await req.models.Liv2FilteringInterception.destroy({
+    const result = await req.models.Liv2FilteringInterception.destroy({
       where: { irule_id: req.params.id },
     });
     req.sequelize.close().then(() => {
       console.log('connection closed');
     });
     return res.send({
-      message: `Successfully deleted!`,
+      message: result?`Successfully deleted!`: `The id does not exist.`,
     });
   } catch (error) {
     req.sequelize.close().then(() => {
