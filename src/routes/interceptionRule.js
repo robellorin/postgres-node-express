@@ -242,7 +242,7 @@ router.delete('/:id', async (req, res, next) => {
       });
     }
 
-    req.models.Liv2FilteringInterception.destroy({
+    await req.models.Liv2FilteringInterception.destroy({
       where: { irule_id: req.params.id },
     });
     req.sequelize.close().then(() => {
