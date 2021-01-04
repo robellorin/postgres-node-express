@@ -54,6 +54,12 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const insertData = req.body.data;
+    if (!insertData.action || insertData.action==='') {
+      res.status(500).send({
+        message: error,
+      });
+      return
+    }
 
     let maxWeight = null;
 
@@ -68,13 +74,11 @@ router.post('/', async (req, res) => {
     if (Array.isArray(insertData)) {
       insertData.map((data)=>data.weight = ++maxWeight)
       result = await req.models.Liv2FilteringInterception.bulkCreate(insertData, {returning: true});
-      // result = JSON.parse(JSON.stringify(result))
     } else {
       insertData.weight = ++maxWeight;
       result = await req.models.Liv2FilteringInterception.create(insertData, {returning: true});
       result = JSON.parse(JSON.stringify(result))
     }
-    // const result = await req.models.Liv2FilteringInterception.create(insertData);
     req.sequelize.close().then(() => {
       console.log('connection closed');
     });
@@ -97,6 +101,12 @@ router.put('/:id', async (req, res) => {
   try {
     const updateData = req.body.data;
     delete updateData.irule_id;
+    if (updateData.action === '') {
+      res.status(500).send({
+        message: error,
+      });
+      return
+    }
     if (!req.params.id) {
       return res.status(500).send({
         message: `Could not find the record to update.`,
@@ -183,8 +193,13 @@ router.put('/', async (req, res) => {
   try {
     const query = req.body.query;
     const updateData = req.body.data;
-
     delete updateData.irule_id;
+    if (updateData.action === '') {
+      res.status(500).send({
+        message: error,
+      });
+      return
+    }
     if (updateData.weight) {
       return res.status(500).send({
         message: `Please use single update mode to update weight.`,
