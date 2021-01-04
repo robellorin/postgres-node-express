@@ -31,7 +31,6 @@ export default async (req, res, next) => {
     //   password: '',
     //   port: 5432,
     // };
-
     const config = await connectDb(dbCred);
     req.models = config.models;
     req.sequelize = config.sequelize;

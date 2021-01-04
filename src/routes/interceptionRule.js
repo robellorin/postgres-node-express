@@ -96,6 +96,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const updateData = req.body.data;
+    delete updateData.irule_id;
     if (!req.params.id) {
       return res.status(500).send({
         message: `Could not find the record to update.`,
@@ -182,6 +183,8 @@ router.put('/', async (req, res) => {
   try {
     const query = req.body.query;
     const updateData = req.body.data;
+
+    delete updateData.irule_id;
     if (updateData.weight) {
       return res.status(500).send({
         message: `Please use single update mode to update weight.`,

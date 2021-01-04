@@ -307,6 +307,7 @@ router.put('/:id', async (req, res, next) => {
     }
 
     const data = req.body;
+    delete data.user_id;
     const result = await req.models.Liv2Users.update(data, {
       where: { user_id: req.params.id },
       returning: true
@@ -334,6 +335,7 @@ router.put('/', async (req, res, next) => {
     const condition = req.body.query;
 
     const data = req.body.data;
+    delete data.user_id;
     const result = await req.models.Liv2Users.update(data, {
       where: condition,
       returning: true
