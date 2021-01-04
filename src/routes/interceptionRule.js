@@ -54,13 +54,14 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const insertData = req.body.data;
-    if (!insertData.action || insertData.action==='') {
+    if (!insertData.action || insertData.action==='' || !protocols.protocols || insertData.protocols==='') {
       res.status(500).send({
-        message: error,
+        message: error.toString(),
       });
       return
     }
 
+    delete insertData.irule_id;
     let maxWeight = null;
 
     // find the max weight
@@ -92,7 +93,7 @@ router.post('/', async (req, res) => {
       console.log('connection closed');
     });
     res.status(500).send({
-      message: error,
+      message: error.toString(),
     });
   }
 });
@@ -100,10 +101,16 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const updateData = req.body.data;
+    if (updateData.irule_id || updateData.action === '' || updateData.action === null || updateData.protocols === '' || updateData.protocols === null) {
+      res.status(500).send({
+        message: "it is not allowed to update irule_id, and action and protocols should not be null",
+      });
+      return
+    }
     delete updateData.irule_id;
     if (updateData.action === '') {
       res.status(500).send({
-        message: error,
+        message: error.toString(),
       });
       return
     }
@@ -184,7 +191,7 @@ router.put('/:id', async (req, res) => {
     });
     console.log(error);
     res.status(500).send({
-      message: error,
+      message: error.toString(),
     });
   }
 });
@@ -193,13 +200,13 @@ router.put('/', async (req, res) => {
   try {
     const query = req.body.query;
     const updateData = req.body.data;
-    delete updateData.irule_id;
-    if (updateData.action === '') {
+    if (updateData.irule_id || updateData.action === '' || updateData.action === null || updateData.protocols === '' || updateData.protocols === null) {
       res.status(500).send({
-        message: error,
+        message: "it is not allowed to update irule_id and action and protocols should not be null",
       });
       return
     }
+    delete updateData.irule_id;
     if (updateData.weight) {
       return res.status(500).send({
         message: `Please use single update mode to update weight.`,
@@ -223,7 +230,7 @@ router.put('/', async (req, res) => {
     });
     console.log(error);
     res.status(500).send({
-      message: error,
+      message: error.toString(),
     });
   }
 });
@@ -247,7 +254,7 @@ router.delete('/', async (req, res, next) => {
     });
     console.log(error);
     res.status(500).send({
-      message: error,
+      message: error.toString(),
     });
   }
 });
@@ -275,7 +282,7 @@ router.delete('/:id', async (req, res, next) => {
     });
     console.log(error);
     res.status(500).send({
-      message: error,
+      message: error.toString(),
     });
   }
 });

@@ -53,8 +53,18 @@ const makeFlattern = (user) => {
 router.get('/', async (req, res) => {
   try {
     let { usertypes, userOp } = req.body;
+    if (!usertypes) {
+      return res.status(500).json({
+        message: "usertypes should need to be defined",
+      });
+    }
     usertypes = usertypes.map(usertype=>usertype.toUpperCase())
     userOp = userOp? userOp.toUpperCase(): null;
+    if (!req.body.query) {
+      return res.status(500).json({
+        message: "query should need to be defined",
+      });
+    }
     const { AD, INET, Groups, SysGrp } = req.body.query;
     const include = [];
     const inetIncludeArr = [];
@@ -307,7 +317,13 @@ router.put('/:id', async (req, res, next) => {
     }
 
     const data = req.body;
-    delete data.user_id;
+    if (data.hasOwnProperty("user_id")) {
+      res.status(500).send({
+        message: "it is not allowed to update user_id",
+      });
+      return
+    }
+    delete data.user_id;    
     const result = await req.models.Liv2Users.update(data, {
       where: { user_id: req.params.id },
       returning: true
@@ -335,6 +351,12 @@ router.put('/', async (req, res, next) => {
     const condition = req.body.query;
 
     const data = req.body.data;
+    if (data.hasOwnProperty("user_id")) {
+      res.status(500).send({
+        message: "it is not allowed to update user_id",
+      });
+      return
+    }
     delete data.user_id;
     const result = await req.models.Liv2Users.update(data, {
       where: condition,
