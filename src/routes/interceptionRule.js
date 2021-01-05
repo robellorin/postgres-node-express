@@ -54,7 +54,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const insertData = req.body.data;
-    if (!insertData.action || insertData.action==='' || !protocols.protocols || insertData.protocols==='') {
+    if (!insertData.action || insertData.action==='' || !insertData.protocols || insertData.protocols==='') {
       res.status(500).send({
         message: 'protocols or action should need to be defined',
       });
