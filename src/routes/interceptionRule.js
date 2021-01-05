@@ -56,7 +56,7 @@ router.post('/', async (req, res) => {
     const insertData = req.body.data;
     if (!insertData.action || insertData.action==='' || !protocols.protocols || insertData.protocols==='') {
       res.status(500).send({
-        message: error.toString(),
+        message: 'protocols or action should need to be defined',
       });
       return
     }
@@ -108,12 +108,6 @@ router.put('/:id', async (req, res) => {
       return
     }
     delete updateData.irule_id;
-    if (updateData.action === '') {
-      res.status(500).send({
-        message: error.toString(),
-      });
-      return
-    }
     if (!req.params.id) {
       return res.status(500).send({
         message: `Could not find the record to update.`,
@@ -207,7 +201,7 @@ router.put('/', async (req, res) => {
       return
     }
     delete updateData.irule_id;
-    if (updateData.weight) {
+    if (updateData.weight || updateData.hasOwnProperty("weight")) {
       return res.status(500).send({
         message: `Please use single update mode to update weight.`,
       });

@@ -341,7 +341,7 @@ router.put('/:id', async (req, res, next) => {
     });
     console.log(error);
     return res.status(500).send({
-      message: error,
+      message: error.message
     });
   }
 });
@@ -375,7 +375,7 @@ router.put('/', async (req, res, next) => {
     });
     console.log(error);
     return res.status(500).send({
-      message: error,
+      message: error.message
     });
   }
 });
