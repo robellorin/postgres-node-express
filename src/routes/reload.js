@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
     }
     axios.defaults.headers.common.Authorization = token;
     const result = await axios.get(
-      `${httpHeader}${formatedIP}run_shell.php`,
+      `${httpHeader}${formatedIP}reload.php`,
     );
     if (result) {
       return res.send({
