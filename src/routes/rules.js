@@ -17,7 +17,11 @@ router.get('/', async (req, res) => {
           required: true,
           through: { attributes: [] }
         },
-        where: condition,
+        where: {
+          rule_remote_url: {
+            $like: `%${condition.rule_label}`
+          }
+        },
       },
     );
     req.sequelize.close().then(() => {
